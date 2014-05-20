@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000</color>
+    <color name="white_1">#111</color>
+	<color name="white_2">#222</color>
+	<color name="white_3">#333</color>
+	<color name="white_4">#444</color>
+	<color name="white_5">#555</color>
+	<color name="white_6">#666</color>
+	<color name="white_7">#777</color>
+	<color name="white_8">#888</color>
+	<color name="white_9">#999</color>
+	<color name="white_a">#aaa</color>
+	<color name="white_b">#bbb</color>
+	<color name="white_c">#ccc</color>
+	<color name="white_d">#ddd</color>
+	<color name="white_e">#eee</color>
+	<color name="white">#fff</color>
+	<color name="blue">#2a00ff</color>
+	<color name="blue_lower">#3276b1</color>
+	<color name="blue_light">#33B6EA</color>
+	<color name="blue_link">#160CE8</color>
+</resources>
+
