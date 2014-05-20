@@ -11,8 +11,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper{
 			+ "id varchar(32) primary key unique,"
 			+ "name varchar(20),"
 			+ "author varchar(20),"
-			+ "lastSection varchar(20),"
-			+ "lastSectionName varchar(20)"
+			+ "lastSection varchar(20)"
 			+ ");";
 	
 	private final String sql2 = "create table section("
@@ -39,7 +38,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper{
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		
+		db.execSQL("drop table novel");
+		db.execSQL("drop table section");
+		onCreate(db);
 	}
 
 }

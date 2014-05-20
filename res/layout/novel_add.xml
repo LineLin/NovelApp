@@ -19,7 +19,8 @@
         <EditText android:id="@+id/novelName" 
             android:hint="@string/novel_name_hint"
             android:inputType="text"
-            style="@style/NovelEditItem"/>
+            style="@style/NovelEditItem"
+            android:text="武极天下"/>
         
     </LinearLayout>
     
@@ -47,7 +48,8 @@
         
         <EditText android:id="@+id/novelLastSection" 
             android:inputType="text"
-            style="@style/NovelEditItem"/>
+            style="@style/NovelEditItem"
+            android:text="第一千三百三十章"/>
         
     </LinearLayout>
     

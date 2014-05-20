@@ -56,6 +56,8 @@ public class ChineaseFiguresToNum {
 				maxUnit = unit;
 			}
 		}
+		
+		System.out.println("数字 " + str + " ---> " + result);
 		return result;
 	}
 	

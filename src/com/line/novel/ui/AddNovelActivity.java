@@ -48,10 +48,9 @@ public class AddNovelActivity extends Activity implements OnClickListener{
 			Novel novel = new Novel(name,author,section);
 			Intent intent =  new Intent("com.line.novel.SERVICE_MANAGER");
 			intent.putExtra("novel",novel);
-			startActivity(intent);
+			startService(intent);
 			
-		}else{
-			this.finish();
 		}
+		this.finish();
 	}
 }

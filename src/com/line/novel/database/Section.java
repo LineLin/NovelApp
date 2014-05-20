@@ -31,11 +31,11 @@ public class Section implements Parcelable{
 	private String desc;
 	
 	
-	public Section(String title,String path,String desc){
+	public Section(String title,String desc,String path){
 		this.title = title;
 		this.path = path;
 		this.desc = desc;
-		this.id = UUID.randomUUID().toString().replace("-","");
+		this.id = UUID.randomUUID().toString().replaceAll("-","");
 	}
 	
 	public Section(String id,String title,String path,String desc){
@@ -48,8 +48,8 @@ public class Section implements Parcelable{
 	public Section(Parcel source){
 		this.id = source.readString();
 		this.title = source.readString();
-		this.path = source.readString();
 		this.desc = source.readString();
+		this.path = source.readString();
 	}
 	
 	public String getTitle() {
@@ -89,8 +89,8 @@ public class Section implements Parcelable{
 	public void writeToParcel(Parcel dest, int arg1) {
 		dest.writeString(id);
 		dest.writeString(title);
-		dest.writeString(path);
 		dest.writeString(desc);
+		dest.writeString(path);
 	}
 
 

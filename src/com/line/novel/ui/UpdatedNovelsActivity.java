@@ -40,11 +40,16 @@ public class UpdatedNovelsActivity extends Activity {
 		super.onCreate(saveState);
 		setContentView(R.layout.update_list);
 		
+		
 		helper = new DatabaseOpenHelper(this,1);
 		sDao = new SectionDao(helper.getWritableDatabase());
 		
+		//注册广播
 		receiver = new UpdateMsgReceiver();
-		registerReceiver(receiver, new IntentFilter("com.line.novel.UPDATE_NOVEL"));
+		registerReceiver(receiver, new IntentFilter("com.line.novel.NOVEL_UPDATE"));
+		System.out.println("注册了");
+		
+		
 		
 		listView = (ListView) findViewById(R.id.listView);
 		initData();
@@ -74,22 +79,21 @@ public class UpdatedNovelsActivity extends Activity {
 		
 	}
 	
-	@Override
-	protected void onStart(){
-		super.onStart();
-		registerReceiver(receiver, new IntentFilter("com.line.novel.UPDATE"));
-	}
 	
 	@Override
 	protected void onDestroy(){
 		super.onDestroy();
+		sDao.closeDb();
+		helper.close();
 		unregisterReceiver(receiver);
+		System.out.println("取消注册");
 	}
 	
 	class UpdateMsgReceiver extends BroadcastReceiver{
 
 		@Override
 		public void onReceive(Context arg0, Intent intent) {
+			System.out.println("UpdateNovel接受到广播");
 			Section section = intent.getParcelableExtra("section");
 			Map<String,String> map = new HashMap<String,String>();
 			map.put("title", section.getTitle());

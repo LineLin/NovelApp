@@ -6,7 +6,9 @@
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="19" />
-
+	
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -32,6 +34,13 @@
                 <action android:name="com.line.novel.SERVICE_MANAGER"/>
             </intent-filter>
         </activity>
+        
+        <service android:name="com.line.novel.app.NovelManager" 
+            android:permission="android.permission.INTERNET">
+            <intent-filter>
+                <action android:name="com.line.novel.SERVICE_MANAGER"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

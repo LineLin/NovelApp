@@ -27,7 +27,7 @@ public class NovelListActivity extends Activity implements OnClickListener{
 	
 	private Button addBtn;
 	
-	private ArrayAdapter<String> adapter;
+	private ArrayAdapter<Novel> adapter;
 	
 	private DatabaseOpenHelper helper;
 	
@@ -40,22 +40,23 @@ public class NovelListActivity extends Activity implements OnClickListener{
 		super.onCreate(saveState);
 		setContentView(R.layout.novel_list);
 		
+		//打开数据库链接
 		helper = new DatabaseOpenHelper(this,1);
 		nDao = new NovelDao(helper.getWritableDatabase());
 		
+
+		
+		//初始化和注册接收器
+		receiver = new MyReceiver();
+		registerReceiver(receiver, new IntentFilter("com.line.novel.NOVEL_LIST"));		
+
 		initData();
 		listView = (ListView) findViewById(R.id.listView);
-		adapter = new ArrayAdapter<String>(this,R.layout.novel_list_item,
-				novels.toString().replace("[","").replace("]","").split(", "));
+		adapter = new ArrayAdapter<Novel>(this,R.layout.novel_list_item,
+				novels);
 		listView.setAdapter(adapter);
 		addBtn = (Button) findViewById(R.id.addNovel);
 		addBtn.setOnClickListener(this);
-	}
-	
-	@Override
-	public void onStart(){
-		super.onStart();
-		registerReceiver(receiver, new IntentFilter("com.line.novel.NOVEL_LIST"));
 	}
 	
 	private void initData(){
@@ -76,15 +77,18 @@ public class NovelListActivity extends Activity implements OnClickListener{
 	}
 	
 	@Override
-	public void onStop(){
-		super.onStop();
+	public void onDestroy(){
+		super.onDestroy();
 		unregisterReceiver(receiver);
+		nDao.closeDb();
+		helper.close();
 	}
 	
 	class MyReceiver extends BroadcastReceiver{
 		
 		@Override
 		public void onReceive(Context context,Intent intent){
+			System.out.println("Novel接受的广播");
 			Novel novel = intent.getParcelableExtra("novel");
 			novels.add(novel);
 			adapter.notifyDataSetChanged();
