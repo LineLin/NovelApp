@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/border">
+   
+        
+    <TextView android:id="@+id/menu_novel" 
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:gravity="center_vertical"
+        />
+    
+    <TextView android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/blue_light"/>
+	
+    <TextView android:id="@+id/menu_xiugai" 
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="16sp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:text="@string/menu_xiugai"
+        android:gravity="center_vertical"
+        />
+    
+    <TextView android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white_e"/>
+   	
+    <TextView android:id="@+id/menu_delete" 
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="16sp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:text="@string/menu_delete"
+        android:gravity="center_vertical"
+        />
+    
+</LinearLayout>
