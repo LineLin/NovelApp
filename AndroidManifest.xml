@@ -22,23 +22,25 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="com.line.novel.ui.UpdatedNovelsActivity">
+        <activity android:name="com.line.novel.ui.UpdatedNovelsActivity"/>
+        
+        <activity android:name="com.line.novel.ui.NovelListActivity"/>
+        
+        <activity android:name="com.line.novel.ui.HistoryUpdateActivity"/>
+        
+        <activity android:name="com.line.novel.ui.NovelDetailActivity">
+           
         </activity>
         
-        <activity android:name="com.line.novel.ui.NovelListActivity">
+        <activity android:name="com.line.novel.ui.NovelPostActivity"/>
             
-        </activity>
-        
-        <activity android:name="com.line.novel.ui.AddNovelActivity">
-            <intent-filter >
-                <action android:name="com.line.novel.SERVICE_MANAGER"/>
-            </intent-filter>
-        </activity>
-        
         <service android:name="com.line.novel.app.NovelManager" 
             android:permission="android.permission.INTERNET">
-            <intent-filter>
-                <action android:name="com.line.novel.SERVICE_MANAGER"/>
+            <intent-filter >
+                <action android:name="com.line.novel.SERVICE_MANAGER_ADD"/>
+            </intent-filter>
+            <intent-filter >
+                <action android:name="com.line.novel.SERVICE_MANAGER_UPDATE"/>
             </intent-filter>
         </service>
     </application>

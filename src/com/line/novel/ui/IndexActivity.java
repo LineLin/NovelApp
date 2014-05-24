@@ -16,6 +16,11 @@ public class IndexActivity extends ActivityGroup{
 	
 	private TabHost tabHost;
 	
+	public static final String ACTION_FLAG_NOVEL_UPDATE = "com.line.novel.SERVICE_MANAGER_UPDATE";
+	
+	public static final String ACTION_FLAG_NOVEL_ADD = "com.line.novel.SERVICE_MANAGER_ADD";
+
+	public static final String ACTION_FLAG_POST_UPDATE = "com.line.novel.POST_UPDATE";
 	
 	@Override
 	protected void onCreate(Bundle savedState){
@@ -35,7 +40,7 @@ public class IndexActivity extends ActivityGroup{
 		
 		View tab1 = LayoutInflater.from(this).inflate(R.layout.tab_inflate,null);
 		TextView text1 = (TextView) tab1.findViewById(R.id.tabName);
-		text1.setText(getResources().getString(R.string.index));
+		text1.setText(getResources().getString(R.string.update_list));
 		
 		//设置首页tab
 		tabHost.addTab(tabHost.newTabSpec("tab1")
@@ -45,7 +50,7 @@ public class IndexActivity extends ActivityGroup{
 		
 		View tab2 = LayoutInflater.from(this).inflate(R.layout.tab_inflate,null);
 		TextView text2 = (TextView) tab2.findViewById(R.id.tabName);
-		text2.setText(getResources().getString(R.string.novels));
+		text2.setText(getResources().getString(R.string.setting));
 		
 		//设置小说tab
 		tabHost.addTab(tabHost.newTabSpec("tab2")

@@ -30,19 +30,22 @@ public class Section implements Parcelable{
 	
 	private String desc;
 	
+	private int readed;
 	
 	public Section(String title,String desc,String path){
 		this.title = title;
 		this.path = path;
 		this.desc = desc;
+		this.readed = 0;
 		this.id = UUID.randomUUID().toString().replaceAll("-","");
 	}
 	
-	public Section(String id,String title,String path,String desc){
+	public Section(String id,String title,String desc,String path,int readed){
 		this.id = id;
 		this.path = path;
 		this.title = title;
 		this.desc = desc;
+		this.readed = readed;
 	}
 	
 	public Section(Parcel source){
@@ -50,6 +53,7 @@ public class Section implements Parcelable{
 		this.title = source.readString();
 		this.desc = source.readString();
 		this.path = source.readString();
+		this.readed = source.readInt();
 	}
 	
 	public String getTitle() {
@@ -79,7 +83,15 @@ public class Section implements Parcelable{
 	public String getId() {
 		return id;
 	}
-
+	
+	public int getReaded(){
+		return readed;
+	}
+	
+	public void setReaded(){
+		readed = 1;
+	}
+	
 	@Override
 	public int describeContents() {
 		return 0;
@@ -91,6 +103,7 @@ public class Section implements Parcelable{
 		dest.writeString(title);
 		dest.writeString(desc);
 		dest.writeString(path);
+		dest.writeInt(readed);
 	}
 
 

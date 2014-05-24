@@ -1,7 +1,7 @@
 package com.line.novel.database;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,12 +20,8 @@ public class Novel implements Parcelable {
 
 	private String lastSection;
 
-	private List<String> updateWindow;
+	private List<SectionBody> updateWindow;
 
-	// private final static String[] NUMBER =
-	// {"1","2","3","4","5","6","7","8","9",
-	// "0","零","一","二","三","四","五","六","七","八","九"};
-	//
 	public static final Parcelable.Creator<Novel> CREATOR = new Parcelable.Creator<Novel>() {
 
 		@Override
@@ -91,19 +87,19 @@ public class Novel implements Parcelable {
 		this.lastSection = lastSection;
 	}
 
-	public void updateLastSection(String lastSection) {
+	public void updateLastSection(String title) {
 
 		if(updateWindow == null){
-			updateWindow = new ArrayList<String>();
-			updateWindow.add(this.lastSection);
+			updateWindow = new ArrayList<SectionBody>();
+			updateWindow.add(new SectionBody(this.lastSection));
 		}
-		String capter = getCapter(lastSection);
+		String capter = getCapter(title);
 		if(capter != null){
-			lastSection = "第" + capter + "卷 第"  + getSection(lastSection) + sectionKeyWord();
+			title = "第" + capter + "卷 第"  + getSection(title) + sectionKeyWord();
 		}else{
-			lastSection = "第"  + getSection(lastSection) + sectionKeyWord();
+			title = "第"  + getSection(title) + sectionKeyWord();
 		}
-		updateWindow.add(lastSection);
+		updateWindow.add(new SectionBody(title));
 
 		// String value =
 		// ChineaseFiguresToNum.coverToNum(getSection(lastSection)) + "";
@@ -121,45 +117,61 @@ public class Novel implements Parcelable {
 		
 		//如果缓存窗口为空的话，那么不用进行确认更新
 		if(updateWindow == null){
-			updateWindow = new ArrayList<String>();
-			updateWindow.add(this.lastSection);
+			updateWindow = new ArrayList<SectionBody>();
+			updateWindow.add(new SectionBody(this.lastSection));
 			return ;
 		}
 		
-		long[] tmp = new long[updateWindow.size()];
-		String[] ary = updateWindow.toString().replace("[", "").replace("]", "")
-				.split(",");
-		if (getCapter(this.lastSection) != null) {
-			for (int i = 0; i < ary.length; i++) {
-				tmp[i] = Long.valueOf(ChineaseFiguresToNum
-						.coverToNum(getCapter(ary[i]))
-						+ ""
-						+ ChineaseFiguresToNum.coverToNum(getSection(ary[i])));
-			}
-		} else {
-			for (int i = 0; i < ary.length; i++) {
-				tmp[i] = Long.valueOf(ChineaseFiguresToNum.coverToNum(getSection(ary[i])));
-			}
-		}
+////		long[] tmp = new long[updateWindow.size()];
+////		String[] ary = updateWindow.toString().replace("[", "").replace("]", "")
+////				.split(",");
+////		
+////		System.out.println("----text----" + ary.toString());
+//		
+//		if (getCapter(this.lastSection) != null) {
+//			for (int i = 0; i < ary.length; i++) {
+//				tmp[i] = Long.valueOf(ChineaseFiguresToNum
+//						.coverToNum(getCapter(ary[i]))
+//						+ ""
+//						+ ChineaseFiguresToNum.coverToNum(getSection(ary[i])));
+//			}
+//		} else {
+//			for (int i = 0; i < ary.length; i++) {
+//				tmp[i] = Long.valueOf(ChineaseFiguresToNum.coverToNum(getSection(ary[i])));
+//			}
+//		}
+//		
+//		Arrays.sort(tmp);
+//		int i = 0;
+//		for (i = 1; i < tmp.length; i++) {
+//			if (tmp[i] - tmp[i - 1] != 1) {
+//				break;
+//			}
+//		}
 		
-		Arrays.sort(tmp);
-		int i = 0;
-		for (i = 1; i < tmp.length; i++) {
-			if (tmp[i] - tmp[i - 1] != 1) {
+		
+		Collections.sort(updateWindow);
+		int  i;
+		for(i = 1; i < updateWindow.size(); i++){
+			if(updateWindow.get(i).key - updateWindow.get(i-1).key != 1){
 				break;
 			}
-			updateWindow.remove(i-1);
 		}
 		
-		this.lastSection = updateWindow.get(0);
+		//0～i-1 都已验证，删除0～i-2的数据，更新i-1到最新章节
+		i = i-2;
+		while(i-- >= 0){
+			updateWindow.remove(0);
+		}
+		
+		this.lastSection = updateWindow.get(0).title;
 		
 	}
 
 	public boolean isUpdate(String title) {
 		
 		if(title.contains("第") && title.contains(sectionKeyWord()) &&
-				compareSection(lastSection, title) < 0){
-			
+				compareSection(this.lastSection, title) < 0){
 			return true;
 		}
 		return false;
@@ -191,14 +203,26 @@ public class Novel implements Parcelable {
 	public int compareSection(String str1, String str2) {
 		String cap1 = getCapter(str1);
 		String cap2 = getCapter(str2);
-		if (cap1 != null && cap2 != null && cap1.compareTo(cap2) != 0) {
-			return cap1.compareTo(cap2);
+		System.out.println(cap1 + " vs " + cap2);
+		if (cap1 != null && cap2 != null) {
+			long num1 = ChineaseFiguresToNum.coverToNum(cap1);
+			long num2 = ChineaseFiguresToNum.coverToNum(cap2);
+			if(num1 != num2){
+				return (int)(num1 - num2);
+			}
 		}
 
 		String sec1 = getSection(str1);
 		String sec2 = getSection(str2);
-		return sec1.compareTo(sec2);
+		long num1 = ChineaseFiguresToNum.coverToNum(sec1);
+		long num2 = ChineaseFiguresToNum.coverToNum(sec2);
+		System.out.println(num1 + " vs " + num2);
+		return (int)(num1-num2);
 	}
+	
+//	private long getCompareKey(String str){
+//		
+//	}
 	
 	@Override
 	public String toString(){
@@ -222,5 +246,34 @@ public class Novel implements Parcelable {
 		dest.writeString(this.author);
 		dest.writeString(this.lastSection);
 	}
-
+	
+	private class SectionBody implements Comparable<SectionBody>{
+		
+		private String title = "";
+		
+		private long key;
+		
+		public SectionBody(String title){
+			String section = getSection(title);
+			String capter = getCapter(title);
+			long numCapter = 0, numSection = 0;
+			
+			if(capter != null){ 
+				numCapter = ChineaseFiguresToNum.coverToNum(capter);
+				this.title = "第" + capter + "卷 ";
+			}
+			
+			this.title += "第" + section + sectionKeyWord();
+			
+			numSection = ChineaseFiguresToNum.coverToNum(section);
+			key = Long.valueOf(numCapter + "" + numSection);
+		}
+		
+		
+		@Override
+		public int compareTo(SectionBody obj) {
+			
+			return (int)(this.key - obj.key);
+		}
+	}
 }

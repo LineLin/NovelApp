@@ -18,7 +18,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper{
 			+ "id varchar(32) primary key unique,"
 			+ "title varchar(32),"
 			+ "desc varchar(255),"
-			+ "path varchar(255)"
+			+ "path varchar(255),"
+			+ "readed boolean"
 			+ ");";
 	
 	public DatabaseOpenHelper(Context context, String name,
@@ -38,9 +39,9 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper{
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("drop table novel");
-		db.execSQL("drop table section");
-		onCreate(db);
+//		db.execSQL("drop table novel");
+//		db.execSQL("drop table section");
+//		onCreate(db);
 	}
 
 }

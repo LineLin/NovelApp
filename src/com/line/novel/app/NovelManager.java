@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -19,6 +20,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -26,16 +28,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import com.line.novel.database.DatabaseOpenHelper;
 import com.line.novel.database.Novel;
 import com.line.novel.database.NovelDao;
 import com.line.novel.database.Section;
 import com.line.novel.database.SectionDao;
-import com.line.novel.ui.NovelDetailActivity;
+import com.line.novel.ui.IndexActivity;
+import com.line.novel.ui.NovelPostActivity;
 import com.line.novelapp.R;
 
 public class NovelManager extends Service{
+	
+	private static final int INT_MINUTE = 1000 * 60; //分钟
+	
+	private static final int INT_HOUR = 1000 * 60 * 60 ; //小时
 	
 	private NovelDao nDao;
 	
@@ -45,7 +53,12 @@ public class NovelManager extends Service{
 	
 	private NotificationManager nManager;
 	
-	private Map<String,Timer> timers;
+	public static Map<String,Timer> timers;
+	
+	static{
+		
+		timers = new HashMap<String,Timer>();
+	}
 	
 	@Override
 	public void onCreate(){
@@ -55,7 +68,6 @@ public class NovelManager extends Service{
 		sDao = new SectionDao(helper.getWritableDatabase());
 		nManager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE
 				);
-		timers = new HashMap<String,Timer>();
 	}
 	
 	@Override
@@ -68,19 +80,36 @@ public class NovelManager extends Service{
 		super.onStartCommand(intent, flags, startId);
 		
 		Novel novel = intent.getParcelableExtra("novel");
-		nDao.addNovel(novel);
+		if(intent.getAction().equals(IndexActivity.ACTION_FLAG_NOVEL_ADD)){
+			nDao.addNovel(novel);
+			
+			//通知小说列表更新小说
+			Intent updateIntent = new Intent("com.line.novel.NOVEL_LIST");
+			updateIntent.putExtra("novel",novel);
+			sendBroadcast(updateIntent);
+			
+			Timer timer = new Timer();
+			timers.put(novel.getId(),timer);
+			timer.schedule(new NovelTimerTask(this, timer, novel),0);
+		}
 		
-		//通知小说列表更新小说
-		Intent updateIntent = new Intent("com.line.novel.NOVEL_LIST");
-		updateIntent.putExtra("novel",novel);
-		sendBroadcast(updateIntent);
+		if(intent.getAction().equals(IndexActivity.ACTION_FLAG_NOVEL_UPDATE)){
+			nDao.updateNovel(novel);
+			Timer timer = timers.get(novel.getId());
+			if(timer != null){
+				timer.cancel();
+				timer.purge();
+				timers.remove(novel.getId());
+			}
+			timer = new Timer();
+			timers.put(novel.getId(),timer);
+			timer.schedule(new NovelTimerTask(this, timer, novel),0);
+			Toast.makeText(this, "修改成功",Toast.LENGTH_SHORT).show();
+		}
 		
-		Timer timer = new Timer();
-		timers.put(novel.getId(),timer);
-		timer.schedule(new NovelTimerTask(this, timer, novel),0);
 		return Service.START_REDELIVER_INTENT;
 	}
-	
+
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
@@ -121,8 +150,8 @@ public class NovelManager extends Service{
 				
 				for(int i = 0; i<nodes.size();i++){
 					final Element link = nodes.get(i).getElementsByTag("a").get(0);
-					if(novel.isUpdate(link.attr("title"))){
-						System.out.println("标题：" + link.attr("title"));
+					String postId = link.attr("href").substring(3);
+					if(!sDao.isExit(postId) && novel.isUpdate(link.attr("title"))){
 						new Thread(new Runnable(){
 							@Override
 							public void run(){
@@ -131,13 +160,12 @@ public class NovelManager extends Service{
 										+ link.attr("href"));
 								try {
 									//获取小说正文
-									System.out.println("url-->"+hGet.getURI());
 									HttpEntity entity = httpClient.execute(hGet).getEntity();
 									String result = EntityUtils.toString(entity,"UTF-8");
-//									System.out.println("result");
 									Document doc = Jsoup.parse(result);
 									Element body = doc.getElementsByClass("d_post_content_firstfloor").get(0);
-									
+									body = body.getElementsByClass("p_content").get(0);
+
 									//保存到本地
 									String fileName = link.attr("href").replaceAll("/","")+".html";
 									FileOutputStream output = context.openFileOutput(fileName,MODE_PRIVATE);
@@ -155,22 +183,25 @@ public class NovelManager extends Service{
 									sDao.insert(section);
 									
 									//通知更新小说列表有消息需要刷新
-									Intent updateIntent = new Intent("com.line.novel.NOVEL_UPDATE");
+									Intent updateIntent = new Intent(IndexActivity.ACTION_FLAG_POST_UPDATE);
 									updateIntent.putExtra("section",section);
 									context.sendBroadcast(updateIntent);
 									
 									//通知栏
 									NotificationCompat.Builder mBuilder =
 									        new NotificationCompat.Builder(context)
+											.setAutoCancel(true)
+											.setDefaults(Notification.DEFAULT_LIGHTS)
 									        .setSmallIcon(R.drawable.ic_launcher)
 									        .setContentTitle(link.attr("title"));
 									
-									Intent detailIntent = new Intent(context,NovelDetailActivity.class);
-									detailIntent.putExtra("path",section.getPath());
+									Intent postIntent = new Intent(context,NovelPostActivity.class);
+									postIntent.putExtra("path",section.getPath());
+									postIntent.putExtra("title", section.getTitle());
 									PendingIntent pi = PendingIntent.getActivity(context,
-											0, detailIntent,PendingIntent.FLAG_ONE_SHOT);
+											0, postIntent,PendingIntent.FLAG_ONE_SHOT);
 									mBuilder.setContentIntent(pi);
-									nManager.notify(Integer.valueOf(section.getPath().substring(1,3)), mBuilder.build());
+									nManager.notify(Integer.valueOf(fileName.substring(fileName.length()-8,fileName.length()-5)), mBuilder.build());
 									
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -189,9 +220,9 @@ public class NovelManager extends Service{
 			int hour = calendar.get(Calendar.HOUR_OF_DAY);
 			
 			if(0 <= hour && hour < 7){
-				timer.schedule(new NovelTimerTask(context,timer,novel),(7-hour)*1000*60*60);
+				timer.schedule(new NovelTimerTask(context,timer,novel),(7-hour) * INT_HOUR);
 			}else{
-				timer.schedule(new NovelTimerTask(context,timer,novel),20*1000*60);
+				timer.schedule(new NovelTimerTask(context,timer,novel), 5 * INT_MINUTE);
 			}
 		}
 		

@@ -1,8 +1,9 @@
 <resources>
 
     <string name="app_name">小说更新查看器</string>
-	<string name="index">主页</string>
-	<string name="novels">小说列表</string>
+	<string name="update_list">更新列表</string>
+	<string name="setting">设置</string>
+	<string name="novel_setting">小说设置</string>
 	<string name="add_novel">添加小说</string>
 	<string name="novel_name">小说名</string>
 	<string name="novel_name_hint">小说在起点的名称</string>
@@ -11,5 +12,6 @@
 	<string name="novel_last_section_name">最新章节名</string>
 	<string name="vertify">确认</string>
 	<string name="cancel">取消</string>
-	
+	<string name="menu_xiugai">修改</string>
+	<string name="menu_delete">删除</string>
 </resources>

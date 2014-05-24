@@ -12,9 +12,13 @@ public class SectionDao {
 	
 	private final String listAll = "select * from section";
 	
-	private final String deleteSql = "delete from section where id = ?";
+	private final String listUnRead = "select * from section where readed = 0 ";
 	
-	private final String insert = "insert into section values (?,?,?,?)";
+	private final String insert = "insert into section values (?,?,?,?,?)";
+	
+	private final String findByPId = "select * from section where path like ?";
+	
+	private final String updateState = "update section set readed = ? where id = ?";
 	
 	public SectionDao(SQLiteDatabase db){
 		this.db = db;
@@ -25,14 +29,20 @@ public class SectionDao {
 		return cursorToList(cursor);
 	}
 	
-	public void delete(String id){
-		db.execSQL(deleteSql, new String[]{id});
+	public List<Section> listUnRead(){
+		Cursor cursor = db.rawQuery(listUnRead, null);
+		return cursorToList(cursor);
 	}
 	
 	public void insert(Section section){
-		String[] params = new String[]{section.getId(),section.getTitle(),section.getDesc(),
-				section.getPath()};
+		Object[] params = new Object[]{section.getId(),section.getTitle(),section.getDesc(),
+				section.getPath(),section.getReaded()};
 		db.execSQL(insert,params);
+	}
+	
+	public void updateSectionState(String id,int readed){
+		Object[] params = new Object[]{readed,id};
+		db.execSQL(updateState, params);
 	}
 	
 	public List<Section> cursorToList(Cursor cursor){
@@ -44,10 +54,20 @@ public class SectionDao {
 			String title = cursor.getString(cursor.getColumnIndex("title"));
 			String path = cursor.getString(cursor.getColumnIndex("path"));
 			String desc = cursor.getString(cursor.getColumnIndex("desc"));
-			sections.add(new Section(id,title,path,desc));
+			int readed = cursor.getInt(cursor.getColumnIndex("readed"));
+			sections.add(new Section(id,title,desc,path,readed));
 		}
 		
 		return sections;
+	}
+	
+	public boolean isExit(String pId){
+		Cursor cursor = db.rawQuery(findByPId, new String[]{"%"+pId+"%"});
+		if(cursor.getCount() != 0){
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public void closeDb(){

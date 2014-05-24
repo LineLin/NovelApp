@@ -1,8 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WebView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/webView" >
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical" >
     
-
-</WebView>
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        
+        <TextView style="@style/NovelTipItem"
+            android:text="@string/novel_name"/>
+        
+        <EditText android:id="@+id/novelName" 
+            android:hint="@string/novel_name_hint"
+            android:inputType="text"
+            style="@style/NovelEditItem"
+            android:text="星战风暴"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        
+        <TextView style="@style/NovelTipItem"
+            android:text="@string/novel_author"/>
+        
+        <EditText android:id="@+id/novelAuthor" 
+            android:inputType="text"
+            style="@style/NovelEditItem"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        
+        <TextView style="@style/NovelTipItem"
+            android:text="@string/novel_last_section"/>
+        
+        <EditText android:id="@+id/novelLastSection" 
+            android:inputType="text"
+            style="@style/NovelEditItem"
+            android:text="第十四卷 第十五章"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        
+        <TextView style="@style/NovelTipItem"
+            android:text="@string/novel_last_section_name"/>
+        
+        <EditText android:id="@+id/novelLastSectionName" 
+            android:inputType="text"
+            style="@style/NovelEditItem"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <Button android:id="@+id/vertifyBtn" 
+            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/vertify"
+            android:background="@drawable/btn"
+            android:gravity="center_vertical|center_horizontal"/>
+        
+        <Button android:id="@+id/cancerBtn" 
+            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            android:background="@drawable/btn"
+            android:gravity="center_vertical|center_horizontal"/>
+        
+    </LinearLayout>
+    	
+</LinearLayout>

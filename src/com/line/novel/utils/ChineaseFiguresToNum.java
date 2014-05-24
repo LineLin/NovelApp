@@ -57,7 +57,7 @@ public class ChineaseFiguresToNum {
 			}
 		}
 		
-		System.out.println("数字 " + str + " ---> " + result);
+//		System.out.println("数字 " + str + " ---> " + result);
 		return result;
 	}
 	
